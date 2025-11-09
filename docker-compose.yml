@@ -45,33 +45,35 @@ services:
       timeout: 5s
       retries: 5
 
+  ### MongoD
   ### MongoDb
   mongodb:
     image: mongo:8
     restart: always
     networks:
       - tg-net
-    #ports:
-    #  - "27017:27017"
+      #ports:
+      #  - "27017:27017"
     command:
-      - ["--storage.wiredTiger.engineConfig.cacheSizeGB=0.5", "mongod", "--quiet", "--logpath", "/dev/null", "--logappend"]
+      - mongod
+      - --quiet
+      - --logpath=/dev/null
+      - --logappend
+      - --storage.wiredTiger.engineConfig.cacheSizeGB=0.5
     volumes:
       - ./data/mongo/db:/data/db
       - ./data/mongo/configdb:/data/configdb
-    # environment:
-    #   MONGO_INITDB_ROOT_USERNAME: ${Mongo__User:-root}
-    #   MONGO_INITDB_ROOT_PASSWORD: ${Mongo__Password:-rootpass}
     deploy:
       resources:
         limits:
           cpus: "0.7"
           memory: 1G
-    healthcheck:
-      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand({ ping: 1 })"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
+      healthcheck:
+        test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand({ ping: 1 })"]
+        interval: 10s
+        timeout: 5s
+        retries: 5
+  
   ### Minio
   minio:
     image: minio/minio:latest
